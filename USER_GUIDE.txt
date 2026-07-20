@@ -1,0 +1,515 @@
+================================================================================
+  MINISPECTOR LOG — USER GUIDE
+  ROV Inspection & Simulation Reporting Application
+================================================================================
+
+This guide covers everything a first-time user needs to know, with detailed
+walkthroughs for the Admin setup and project access flow.
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+  1. Application Overview
+  2. How to Open the App
+  3. Login Screen
+  4. Admin Setup (First Launch — Admin Only)
+  5. Admin Panel — Managing Users & Projects
+  6. Mode Select Screen
+  7. Simulation Flow
+  8. Simulation Approval Flow
+  9. Operation Flow
+ 10. Push to Operation (Simulation → Operation)
+ 11. Joining an Existing Project
+ 12. Reviewer (Read-Only) Access
+ 13. Cloud Sync & Auto-Save
+ 14. User Roles Reference
+
+================================================================================
+  1. APPLICATION OVERVIEW
+================================================================================
+
+MiniSpector Log is used by ROV (Remotely Operated Vehicle) inspection teams to:
+
+  - Plan and simulate missions before deployment (Simulation mode)
+  - Log live ROV operations at sea (Operation mode)
+  - Manage sensor packing lists, machine topology, and crew
+  - Track approvals between simulation engineers and team leads
+  - Sync all data to the cloud so vessel and office teams share one record
+
+The app has three main screens:
+  Login Screen → Mode Select Screen → Dashboard
+
+================================================================================
+  2. HOW TO OPEN THE APP
+================================================================================
+
+  Desktop (Electron):
+    Double-click the MiniSpector Log application icon.
+    The app opens directly — no browser or internet required to start.
+
+  Browser (PWA):
+    Open http://localhost:3000 after starting a local server.
+    Use a Chromium-based browser (Chrome, Edge) for best compatibility.
+    The app works offline after the first load (Service Worker caches it).
+
+================================================================================
+  3. LOGIN SCREEN
+================================================================================
+
+You will see two ways to log in:
+
+  ┌─────────────────────────────────────────┐
+  │  User ID Login        │  Reviewer Login │
+  │  ─────────────────    │  ────────────── │
+  │  Enter your User ID   │  Enter a        │
+  │  (given by admin)     │  Project Code   │
+  └─────────────────────────────────────────┘
+
+  A. USER ID LOGIN (Regular Users)
+     - Enter the numeric or alphanumeric ID assigned to you by your admin.
+     - If the ID exists in the system, you proceed to the Mode Select screen.
+     - Your name is displayed in the top-right corner of the app.
+
+  B. REVIEWER LOGIN (Read-Only Access)
+     - Enter a project code (e.g. PRJ-MCS-2026-A3F7).
+     - You will enter the project in Viewer mode — you can browse all data
+       but cannot edit anything. A "VIEWER MODE" badge appears at the top.
+     - To exit Viewer mode, click the badge and select "Exit".
+
+  NOTE: If no admin has been set up yet, you will see a first-time setup
+  prompt when trying to access the Admin Panel (see Section 4).
+
+================================================================================
+  4. ADMIN SETUP (FIRST LAUNCH — ADMIN ONLY)
+================================================================================
+
+On first launch, there is no admin account. The first person to open the
+Admin Panel will be prompted to create one.
+
+  STEP 1 — Open the Admin Panel
+    Click the gear/settings icon in the sidebar.
+    A dialog appears showing "First-Time Setup" instead of a login form.
+
+  STEP 2 — Create the Admin Account
+    Fill in:
+      Admin Username  →  Choose a username (e.g. "admin" or your name)
+      Password        →  Choose a strong password (minimum 1 character)
+    Click "Create Admin Account".
+
+  STEP 3 — Confirmation
+    A success message appears and you are logged into the Admin Panel.
+    This account is saved locally on the device and synced to the cloud.
+
+  IMPORTANT:
+    - There is only one admin account per installation.
+    - The admin password cannot be recovered if forgotten.
+    - The admin account is separate from regular user IDs.
+
+================================================================================
+  5. ADMIN PANEL — MANAGING USERS & PROJECTS
+================================================================================
+
+Access:  Gear icon (⚙) in the sidebar → Enter admin username & password.
+
+The Admin Panel has two tabs: USERS and PROJECTS.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TAB 1: USERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  PURPOSE:
+    Create and manage the user accounts that can log in to the app.
+
+  HOW TO ADD A USER:
+    1. In the "Add User" section at the top, enter:
+         User ID    →  A unique numeric or text ID (e.g. 1001, "john.doe")
+         Full Name  →  The user's display name (e.g. "John Doe")
+    2. Click "Add User".
+    3. The user now appears in the user list below.
+    4. Share the User ID with the person — that is their login credential.
+
+  USER LIST:
+    All registered users are shown in a table with their ID and name.
+    Click the trash icon next to a user to remove them.
+    Removing a user does NOT remove them from existing projects.
+
+  NOTE: There are no passwords for regular users — the User ID is the login.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TAB 2: PROJECTS (Access Control)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  PURPOSE:
+    Control which users can access which project, and what they can do.
+
+  HOW PROJECT ACCESS WORKS:
+    - By default, a project with NO members assigned is open to everyone.
+    - Once you add at least one member, the project becomes RESTRICTED —
+      only assigned members can enter it.
+    - Users NOT on the list will see an "Access Denied" error when they
+      try to join by project code.
+
+  HOW TO MANAGE PROJECT MEMBERS:
+
+    STEP 1 — Load a Project
+      Enter the project code in the "Project Code" field
+      (e.g. PRJ-MCS-2026-A3F7) and click "Load Project".
+      The current member list appears below.
+
+    STEP 2 — Add a Member
+      In the "Add Member" row:
+        Select User  →  Pick from the dropdown of registered users
+        Role         →  Choose one of:
+                          Viewer    — read-only access (cannot edit data)
+                          Operator  — full edit access (default for most users)
+                          Approver  — edit access + can approve simulations
+      Click "Add Member".
+
+    STEP 3 — Change a Member's Role
+      In the member list, use the role dropdown next to any member's name
+      to change their role. The change saves automatically.
+
+    STEP 4 — Remove a Member
+      Click "Remove" next to a member to revoke their project access.
+
+  MEMBER ROLE SUMMARY:
+    Viewer    →  Can browse and read all data. Cannot edit, save, or submit.
+    Operator  →  Full access: edit data, add logs, save, submit for approval.
+    Approver  →  Full access + can approve/reject simulation submissions.
+
+  RECOMMENDED SETUP FOR A TYPICAL PROJECT:
+    - ROV Supervisor    → Operator
+    - ROV Pilot(s)      → Operator
+    - Project Manager   → Approver
+    - Office/Client     → Viewer
+
+  EXAMPLE ADMIN WORKFLOW FOR A NEW PROJECT:
+    1. Admin creates user accounts for all team members (Users tab).
+    2. Team creates a project in the app (Simulation or Operation mode).
+    3. Admin goes to Projects tab, enters the project code.
+    4. Admin adds each team member with their appropriate role.
+    5. Now only assigned members can access that project by its code.
+
+================================================================================
+  6. MODE SELECT SCREEN
+================================================================================
+
+After logging in, you land on the Mode Select screen with two choices:
+
+  ┌──────────────────┐    ┌──────────────────┐
+  │  Start New       │    │  Join Existing   │
+  │  Project         │    │  Project         │
+  └──────────────────┘    └──────────────────┘
+
+  A. START NEW PROJECT
+     Choose either:
+       Simulation  →  For planning and pre-mission analysis before deployment.
+       Operation   →  For live logging during the actual ROV mission.
+
+  B. JOIN EXISTING PROJECT
+     Enter the project code shared with you by the vessel or project lead.
+     The app searches the cloud first, then local storage if offline.
+     You must be assigned to this project by admin to access it (if restricted).
+
+================================================================================
+  7. SIMULATION FLOW
+================================================================================
+
+Simulation mode is for pre-mission planning. Use it to:
+  - Select the scope and ROV configuration
+  - Build the sensor and equipment packing list
+  - Define machine topology (IPs, hardware, deliverables)
+  - Document known issues and thruster configuration
+
+  STEP 1 — ROV & SCOPE SELECTION (Step 1 screen)
+    Select the operation scope from the dropdown.
+    Choose which ROV units are in use and mark each as Main or Standby.
+    Click "Continue to Mission Planning" to proceed.
+
+  STEP 2 — MISSION PLANNING TABS (Step 2 screen)
+    The toolbar shows two sub-tabs:
+
+    ┌──────────────────────┬──────────────────────┐
+    │  Sensors & Equipment │  Topology            │
+    └──────────────────────┴──────────────────────┘
+
+    Sensors & Equipment tab:
+      - Add sensors to the packing list (name, model, quantity).
+      - Mark each sensor as Calibrated and Tested using the checkboxes.
+      - Add equipment and consumables.
+      - Note any known issues.
+
+    Topology tab:
+      - Upload a system diagram image.
+      - Add machines/computers with their IP addresses and software.
+      - Fill in the System IPs table (all network devices).
+      - Add hardware and consumables.
+      - Record simulation test results in Simulation Status.
+      - Set deliverable details (handover recipient, date, storage media).
+
+  STEP 3 — SAVE THE SIMULATION
+    Click the save icon (floppy disk) in the toolbar.
+    Choose a save location when prompted.
+    The simulation is saved locally and pushed to the cloud if online.
+    A project code is auto-generated — note it down or share it.
+
+================================================================================
+  8. SIMULATION APPROVAL FLOW
+================================================================================
+
+Before a simulation can be pushed to Operation, it must be approved.
+
+  WHO CAN APPROVE:
+    - Users assigned the "Approver" role for that project (by admin).
+
+  ──────────────────────────────────────────────────────
+  STEP 1 — SUBMIT FOR APPROVAL (Operator/Simulation Lead)
+  ──────────────────────────────────────────────────────
+    In the simulation dashboard header, look for the approval status widget.
+    It shows one of: Draft → Submitted → Approved / Rejected
+
+    When the simulation is ready:
+    1. Click "Submit for Approval" in the header widget.
+    2. Status changes to "Submitted" (shown as a yellow/blue badge).
+    3. The approver is notified on their next cloud sync.
+
+  ──────────────────────────────────────────────────────
+  STEP 2 — REVIEW & APPROVE (Approver)
+  ──────────────────────────────────────────────────────
+    The approver logs in and joins the project by its code.
+    A new "Approvals" tab appears in the left sidebar (only visible to approvers).
+
+    1. Click the "Approvals" sidebar item.
+    2. A list of submitted simulations appears.
+    3. Review the simulation data (sensors, topology, issues).
+    4. Choose one of:
+         Approve  →  Green button — simulation is cleared for operation.
+         Reject   →  Red button  — enter a reason; operator is notified.
+
+    If rejected, the operator sees a "Rejected" badge with the reason shown.
+    They can update the simulation and re-submit.
+
+  ──────────────────────────────────────────────────────
+  STEP 3 — APPROVED STATE
+  ──────────────────────────────────────────────────────
+    Once approved, the header shows a green "Approved" badge.
+    The "Push to Operation" button becomes active.
+    The approval state is synced to all connected devices in real time.
+
+================================================================================
+  9. OPERATION FLOW
+================================================================================
+
+Operation mode is for live mission logging. The sidebar has these sections:
+
+  Project Details    →  Project name, code, vessel, location, crew list
+  Shift Log          →  Daily shift records (weather, dates, notes)
+  Dive Log           →  Individual dive entries (depth, duration, ROV used)
+  Maintenance Log    →  Equipment maintenance records
+  HSE Report         →  Health, Safety & Environment incident reports
+  Standby Log        →  Standby time records
+  Fault Log          →  Equipment fault records
+  Pre-Dive Check     →  Pre-dive checklist (per ROV unit)
+  Post-Dive Check    →  Post-dive inspection checklist
+  Camera Systems     →  Camera and lighting payload records
+  LARS               →  Launch and Recovery System status
+  Dashboard          →  Summary charts and KPI cards
+
+  ADDING LOG ENTRIES:
+    Each log section has an "+ Add" button.
+    A modal dialog opens — fill in the fields and click Save.
+    Entries appear as cards in the log list. Click a card to edit it.
+
+  SAVING:
+    Click the Save button (top-right of header) to save manually.
+    The app auto-saves a draft every 3 minutes.
+    Saved data is pushed to the cloud after each manual save.
+
+  EXPORTING:
+    Use the Export Word button to generate a .docx report.
+
+================================================================================
+  10. PUSH TO OPERATION (SIMULATION → OPERATION)
+================================================================================
+
+When the simulation is approved, the lead engineer pushes it to Operation.
+This transfers all planning data into the live operation session.
+
+  WHAT GETS TRANSFERRED:
+    - Project name, code, and scope
+    - All mission sensors and their calibration/test status
+    - Machine/computer list with IP addresses
+    - Equipment and hardware list
+    - ROV unit roster (main/standby roles)
+    - Thruster configuration
+    - System IP table
+
+  HOW TO PUSH:
+    1. Open the approved simulation.
+    2. Click "Push to Operation" in the simulation toolbar.
+    3. A confirmation dialog shows a summary of what will be transferred.
+    4. Click "Proceed" to confirm.
+
+  WHAT HAPPENS AFTER PUSH:
+    - The app switches automatically to Operation mode.
+    - A new "Pre-Operation" tab appears in the sidebar.
+    - Sensors and machines are pre-loaded into the operation session.
+    - The simulation is locked (read-only). An orange "SIMULATION LOCKED" banner
+      appears. Use "Unlock & Re-edit" only if changes are needed before re-push.
+    - The operation data is synced to the cloud immediately.
+    - Other team members joining by project code will open in Operation mode
+      with all the pre-filled data.
+
+================================================================================
+  11. JOINING AN EXISTING PROJECT
+================================================================================
+
+  STEP 1 — Get the Project Code
+    The project code is shown in the top banner of the creator's session.
+    It looks like: PRJ-MCS-2026-A3F7
+    Share this code with team members who need to join.
+
+  STEP 2 — Log In and Join
+    Log in with your User ID.
+    On the Mode Select screen, click "Join Existing Project".
+    Enter the project code and click "Join Project".
+
+  STEP 3 — Access Check
+    If the admin has restricted the project, your User ID must be on the
+    member list. If not, you will see:
+      "You do not have access to this project. Contact your admin."
+    Ask your admin to add you in the Projects tab of the Admin Panel.
+
+  STEP 4 — Enter the Project
+    The app loads the project in its current mode (Simulation or Operation).
+    All existing data is populated automatically.
+    Changes you make are synced to the cloud for all connected users.
+
+  OFFLINE JOIN:
+    If the cloud is unavailable, the app searches local storage.
+    If found locally, a local copy loads. Access control still applies if
+    the cloud becomes reachable.
+
+================================================================================
+  12. REVIEWER (READ-ONLY) ACCESS
+================================================================================
+
+Use Reviewer login to let clients, managers, or external parties view a
+project without the risk of accidental edits.
+
+  HOW TO ENTER REVIEWER MODE:
+    On the Login screen, use the "Reviewer Login" section.
+    Enter the project code and click "View Project".
+    No User ID is required — no admin setup needed for this.
+
+  WHAT REVIEWERS CAN DO:
+    - Browse all dashboard tabs (Project Details, Logs, Checklists, etc.)
+    - See all data exactly as it appears to the team
+
+  WHAT REVIEWERS CANNOT DO:
+    - Edit any field or form
+    - Add, edit, or delete any log entry
+    - Save, export, or sync data
+    - Access Admin Panel, Simulation approval, or Push to Operation
+
+  EXITING REVIEWER MODE:
+    Click the orange "VIEWER MODE" badge at the top.
+    Click "Exit" to return to the Login screen.
+
+================================================================================
+  13. CLOUD SYNC & AUTO-SAVE
+================================================================================
+
+  AUTO-SAVE:
+    The app saves a local draft every 3 minutes automatically.
+    A small "Auto-saved" indicator appears briefly in the header.
+    This protects against data loss if the app crashes.
+
+  CLOUD SYNC:
+    After every manual Save, data is pushed to the cloud (Supabase).
+    A sync status indicator appears in the sidebar header:
+      Cloud icon  →  Synced successfully
+      Offline icon →  No internet — data queued for next connection
+
+  OFFLINE QUEUE:
+    If the internet is unavailable, saves are stored in a queue.
+    When the connection returns, all queued changes are pushed automatically.
+
+  CLOUD UPDATES (Real-Time):
+    If another user (vessel or office) pushes a change to the cloud:
+      - Approval status changes (Approved/Rejected) are applied silently
+        and shown immediately as a toast notification.
+      - Other data changes show a confirmation dialog:
+          "Cloud update detected — load the cloud version?"
+        Click OK to load the latest version. Click Cancel to keep your local copy.
+
+  POLLING:
+    The app checks for cloud updates every 30 seconds while the project is open.
+
+================================================================================
+  14. USER ROLES REFERENCE
+================================================================================
+
+  ┌─────────────────┬────────────────────────────────────────────────────────┐
+  │ Role            │ What They Can Do                                       │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Admin           │ Manage all users and project access via Admin Panel.   │
+  │                 │ Not a project member role — separate login.            │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Operator        │ Full edit access: logs, checklists, save, export.      │
+  │                 │ Can submit simulation for approval.                    │
+  │                 │ Default role for most team members.                    │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Approver        │ Same as Operator, plus:                                │
+  │                 │ Can see the Approvals sidebar tab.                     │
+  │                 │ Can approve or reject submitted simulations.           │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Viewer          │ Read-only. Cannot edit, save, or submit anything.      │
+  │                 │ Assigned via Admin Panel to project members.           │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Reviewer        │ Read-only. Enters via Reviewer Login with project code.│
+  │                 │ No User ID required. Not a registered user account.    │
+  └─────────────────┴────────────────────────────────────────────────────────┘
+
+================================================================================
+  QUICK START CHECKLIST FOR A NEW DEPLOYMENT
+================================================================================
+
+  FOR THE ADMIN (do this before any team member logs in):
+    [ ] Open the app and click the gear icon in the sidebar.
+    [ ] Complete the first-time admin account setup.
+    [ ] Go to Users tab → Add all team members (User ID + Full Name).
+    [ ] Share each person's User ID with them.
+
+  FOR THE SIMULATION LEAD (first project setup):
+    [ ] Log in with your User ID.
+    [ ] Select "Start New Project" → "Simulation".
+    [ ] Fill in ROV configuration and scope.
+    [ ] Complete the Sensors & Equipment and Topology tabs.
+    [ ] Save the simulation (note the auto-generated project code).
+    [ ] Ask admin to add team members to the project via Admin Panel.
+    [ ] Click "Submit for Approval" when the simulation is ready.
+
+  FOR THE APPROVER:
+    [ ] Log in with your User ID.
+    [ ] Join the project by entering the project code.
+    [ ] Click "Approvals" in the sidebar.
+    [ ] Review and click "Approve" or "Reject" with a reason.
+
+  FOR THE SIMULATION LEAD (after approval):
+    [ ] Confirm the "Approved" badge is visible in the simulation header.
+    [ ] Click "Push to Operation".
+    [ ] The app switches to Operation mode with all data pre-filled.
+    [ ] Share the project code with the vessel crew.
+
+  FOR VESSEL CREW (joining the operation):
+    [ ] Log in with your User ID.
+    [ ] Select "Join Existing Project".
+    [ ] Enter the project code provided by the lead.
+    [ ] Operation mode opens with all planning data already loaded.
+    [ ] Begin logging: Shift Log → Dive Log → and other sections as needed.
+
+================================================================================
+  END OF GUIDE
+  MiniSpector Log — version 1.0.0
+================================================================================

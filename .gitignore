@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Electron build output
+release/
+dist/
+
+# Local Claude Code settings (machine-specific)
+.claude/settings.local.json
+
+# Business / operational documents (not app source)
+Job Simulation.xlsx
+users.xlsx
+Technical Logbook - Operation version v1.7.0.pdf
+Total items in Malaysia Vestigo Project- Packing List.xlsx
+Operators Manual.pdf
+
+# Word temp lock files
+assets/templates/~$*.docx
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Stray empty file
+{let

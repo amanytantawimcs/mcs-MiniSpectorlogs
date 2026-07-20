@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniSpector Log — User Manual</title>
+<style>
+:root {
+  --orange: #f39124;
+  --blue: #459fd9;
+  --dark: #111827;
+  --card: #1f2937;
+  --border: #374151;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --green: #10b981;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  line-height: 1.6;
+}
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── COVER ── */
+.cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(135deg, #0f172a 0%, #1a2744 50%, #111827 100%);
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(243,145,36,0.08) 0%, transparent 70%);
+  top: -100px; left: -100px;
+}
+.cover::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(69,159,217,0.08) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+}
+.cover-logo {
+  width: 80px; height: 80px;
+  border-radius: 20px;
+  background: rgba(243,145,36,0.15);
+  border: 2px solid rgba(243,145,36,0.4);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+}
+.cover h1 { font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 1.1; }
+.cover h1 span { color: var(--orange); }
+.cover p.sub { color: var(--muted); font-size: 1.1rem; margin-top: 12px; max-width: 520px; }
+.cover-meta { margin-top: 32px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+.cover-badge {
+  padding: 6px 16px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.12); color: var(--muted);
+}
+.toc-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;
+  margin-top: 40px; max-width: 800px; width: 100%; text-align: left;
+}
+.toc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  color: var(--text); font-size: 0.85rem; font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
+}
+.toc-item:hover { background: rgba(243,145,36,0.08); border-color: rgba(243,145,36,0.3); color: var(--orange); }
+.toc-num { font-size: 0.7rem; font-weight: 700; color: var(--orange); min-width: 18px; }
+
+/* ── LAYOUT ── */
+.page { max-width: 960px; margin: 0 auto; padding: 60px 24px; }
+.section { margin-bottom: 80px; }
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 16px; margin-bottom: 32px;
+  border-bottom: 2px solid var(--border);
+}
+.section-num {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(243,145,36,0.15); border: 1.5px solid rgba(243,145,36,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 800; color: var(--orange); flex-shrink: 0;
+}
+.section-header h2 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+.section-header p { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; margin-bottom: 20px;
+}
+.card-title {
+  font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+
+/* ── SCREEN MOCKUP ── */
+.mockup {
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--border);
+  background: #0f172a;
+  margin-bottom: 20px;
+}
+.mockup-bar {
+  height: 36px; display: flex; align-items: center; gap: 6px;
+  padding: 0 12px; background: #1e293b; border-bottom: 1px solid var(--border);
+}
+.mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+.mockup-url {
+  flex: 1; margin: 0 12px;
+  background: rgba(0,0,0,0.3); border-radius: 6px;
+  height: 22px; display: flex; align-items: center;
+  padding: 0 10px; font-size: 0.72rem; color: #4b5563; font-family: monospace;
+}
+.mockup-body { padding: 20px; }
+
+/* ── BUTTON PILL ── */
+.btn-demo {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+  border: 1px solid; white-space: nowrap;
+}
+.btn-orange { background: var(--orange); color: #fff; border-color: var(--orange); }
+.btn-blue { background: var(--blue); color: #fff; border-color: var(--blue); }
+.btn-gray { background: #374151; color: var(--text); border-color: #4b5563; }
+.btn-green { background: #065f46; color: #6ee7b7; border-color: #10b981; }
+.btn-red { background: #7f1d1d; color: #fca5a5; border-color: var(--red); }
+.btn-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+}
+
+/* ── ICON TABLE ── */
+.icon-table { width: 100%; border-collapse: collapse; }
+.icon-table th, .icon-table td {
+  padding: 12px 16px; text-align: left;
+  border-bottom: 1px solid var(--border); font-size: 0.88rem;
+}
+.icon-table th { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.icon-table tr:last-child td { border-bottom: none; }
+.icon-table tr:hover td { background: rgba(255,255,255,0.02); }
+.icon-cell { display: flex; align-items: center; gap: 10px; }
+.icon-box {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icon-box svg { display: block; }
+
+/* ── STEP LIST ── */
+.steps { list-style: none; counter-reset: step; }
+.steps li {
+  counter-increment: step;
+  display: flex; gap: 16px;
+  padding: 14px 0; border-bottom: 1px solid rgba(55,65,81,0.5);
+}
+.steps li:last-child { border-bottom: none; }
+.steps li::before {
+  content: counter(step);
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(243,145,36,0.15); border: 1.5px solid rgba(243,145,36,0.4);
+  color: var(--orange); font-size: 0.78rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.steps li strong { color: #fff; display: block; margin-bottom: 3px; }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;
+}
+.badge-orange { background: rgba(243,145,36,0.15); color: var(--orange); border: 1px solid rgba(243,145,36,0.3); }
+.badge-blue { background: rgba(69,159,217,0.15); color: var(--blue); border: 1px solid rgba(69,159,217,0.3); }
+.badge-green { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+.badge-red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.badge-gray { background: rgba(107,114,128,0.15); color: var(--muted); border: 1px solid rgba(107,114,128,0.3); }
+
+/* ── CALLOUT ── */
+.callout {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 18px; border-radius: 10px; margin: 16px 0;
+  font-size: 0.875rem;
+}
+.callout-info { background: rgba(69,159,217,0.08); border: 1px solid rgba(69,159,217,0.25); }
+.callout-warn { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); color: #fde68a; }
+.callout-tip  { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+
+/* ── NAV SIDEBAR DEMO ── */
+.nav-demo { background: #1f2937; border-radius: 12px; padding: 12px 8px; border: 1px solid var(--border); }
+.nav-demo-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 12px; border-radius: 7px; margin: 2px 0;
+  font-size: 0.82rem; font-weight: 500; color: var(--muted);
+  border-left: 3px solid transparent;
+}
+.nav-demo-item.active {
+  background: linear-gradient(90deg, rgba(243,145,36,0.18), rgba(243,145,36,0.06));
+  color: #fff; border-left-color: var(--orange); font-weight: 600;
+}
+.nav-demo-item:hover { color: #e5e7eb; }
+.nav-demo-icon {
+  width: 22px; height: 18px; border-radius: 5px;
+  background: #374151; display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; flex-shrink: 0;
+}
+.nav-demo-item.active .nav-demo-icon { background: rgba(243,145,36,0.25); }
+.nav-section-label {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: #4b5563; padding: 14px 14px 6px;
+  border-bottom: 1px solid rgba(55,65,81,0.5); margin-bottom: 4px;
+}
+
+/* ── ROLE TABLE ── */
+.role-table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; }
+.role-table th { background: #374151; padding: 12px 16px; text-align: left; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.role-table td { padding: 14px 16px; font-size: 0.88rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.role-table tr:last-child td { border-bottom: none; }
+.role-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ── FLOW DIAGRAM ── */
+.flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 20px 0; }
+.flow-node {
+  padding: 10px 18px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  font-size: 0.82rem; font-weight: 600; color: var(--text); text-align: center;
+  min-width: 110px;
+}
+.flow-node.highlight { border-color: var(--orange); background: rgba(243,145,36,0.1); color: var(--orange); }
+.flow-node.blue { border-color: var(--blue); background: rgba(69,159,217,0.1); color: var(--blue); }
+.flow-arrow { padding: 0 8px; color: #4b5563; font-size: 1.2rem; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; }
+.checklist li {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid rgba(55,65,81,0.4);
+  font-size: 0.88rem;
+}
+.checklist li:last-child { border-bottom: none; }
+.check-box {
+  width: 18px; height: 18px; border-radius: 4px;
+  border: 1.5px solid #4b5563; flex-shrink: 0; margin-top: 1px;
+}
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; padding: 40px 24px;
+  border-top: 1px solid var(--border);
+  color: var(--muted); font-size: 0.8rem;
+}
+
+/* ── UTIL ── */
+.mt-4 { margin-top: 16px; }
+.mt-6 { margin-top: 24px; }
+.mb-4 { margin-bottom: 16px; }
+.text-orange { color: var(--orange); }
+.text-blue { color: var(--blue); }
+.text-green { color: var(--green); }
+.text-muted { color: var(--muted); }
+.text-sm { font-size: 0.85rem; }
+.font-bold { font-weight: 700; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+
+.screenshot-placeholder {
+  border: 2px dashed #374151; border-radius: 12px;
+  padding: 32px; text-align: center;
+  color: #4b5563; font-size: 0.85rem; margin-bottom: 16px;
+  background: rgba(0,0,0,0.2);
+}
+.screenshot-placeholder svg { display: block; margin: 0 auto 8px; opacity: 0.3; }
+
+hr.divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+code {
+  background: rgba(0,0,0,0.4); border: 1px solid #374151;
+  padding: 2px 7px; border-radius: 5px;
+  font-family: 'Consolas', monospace; font-size: 0.82rem; color: #93c5fd;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="cover-logo">
+    <svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="1.8">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+    </svg>
+  </div>
+  <h1>MiniSpector<sup style="font-size:1.2rem;color:var(--orange)">®</sup> <span>Log</span></h1>
+  <p class="sub">Complete User Manual — Buttons, Icons & Workflows Explained for First-Time Users</p>
+  <div class="cover-meta">
+    <span class="cover-badge">Version 1.0.0</span>
+    <span class="cover-badge">ROV Inspection Reporting</span>
+    <span class="cover-badge">MCS GROUP</span>
+  </div>
+
+  <div class="toc-grid">
+    <a href="#s1" class="toc-item"><span class="toc-num">01</span> Application Overview</a>
+    <a href="#s2" class="toc-item"><span class="toc-num">02</span> Login Screen</a>
+    <a href="#s3" class="toc-item"><span class="toc-num">03</span> Admin Setup</a>
+    <a href="#s4" class="toc-item"><span class="toc-num">04</span> Admin Panel</a>
+    <a href="#s5" class="toc-item"><span class="toc-num">05</span> Mode Select Screen</a>
+    <a href="#s6" class="toc-item"><span class="toc-num">06</span> App Header Buttons</a>
+    <a href="#s7" class="toc-item"><span class="toc-num">07</span> Sidebar Navigation</a>
+    <a href="#s8" class="toc-item"><span class="toc-num">08</span> Simulation Flow</a>
+    <a href="#s9" class="toc-item"><span class="toc-num">09</span> Approval Flow</a>
+    <a href="#s10" class="toc-item"><span class="toc-num">10</span> Operation Flow</a>
+    <a href="#s11" class="toc-item"><span class="toc-num">11</span> Push to Operation</a>
+    <a href="#s12" class="toc-item"><span class="toc-num">12</span> Cloud Sync</a>
+    <a href="#s13" class="toc-item"><span class="toc-num">13</span> User Roles</a>
+    <a href="#s14" class="toc-item"><span class="toc-num">14</span> Quick Start</a>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div>
+      <h2>Application Overview</h2>
+      <p>What MiniSpector Log does and the three-screen flow</p>
+    </div>
+  </div>
+
+  <p>MiniSpector Log is a digital reporting tool for ROV (Remotely Operated Vehicle) inspection teams. It replaces paper logs and spreadsheets with a structured, cloud-synced system used by both vessel crews and office teams.</p>
+
+  <div class="card mt-4">
+    <div class="card-title">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--orange)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      Three-Screen Flow
+    </div>
+    <div class="flow">
+      <div class="flow-node">Login Screen</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Mode Select</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node highlight">Dashboard</div>
+    </div>
+    <p class="text-sm text-muted mt-4">Every session follows this path. After login you choose what to do; the dashboard is where all work happens.</p>
+  </div>
+
+  <div class="card-grid mt-4">
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--orange)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Simulation Mode
+      </div>
+      <p class="text-sm">Pre-mission planning. Build sensor lists, define topology, get approval — before the ROV goes in the water.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Operation Mode
+      </div>
+      <p class="text-sm">Live mission logging at sea. Dive logs, shift records, maintenance, faults, HSE reports — all in one place.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div>
+      <h2>Login Screen</h2>
+      <p>Two ways to enter the app</p>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="mockup-dot" style="background:#ef4444"></div>
+      <div class="mockup-dot" style="background:#f59e0b"></div>
+      <div class="mockup-dot" style="background:#10b981"></div>
+      <div class="mockup-url">http://localhost:3000</div>
+    </div>
+    <div class="mockup-body">
+      <!-- Login card simulation -->
+      <div style="max-width:340px;margin:0 auto;">
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="width:56px;height:56px;border-radius:16px;background:rgba(243,145,36,0.15);border:2px solid rgba(243,145,36,0.4);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          </div>
+          <div style="font-size:1.1rem;font-weight:700;color:#fff;">Welcome to MiniSpector® Log</div>
+          <div style="font-size:0.78rem;color:#6b7280;margin-top:4px;">Sign in to continue</div>
+        </div>
+        <!-- Member login box -->
+        <div style="border-radius:14px;padding:18px;border:1px solid rgba(69,159,217,0.25);background:rgba(69,159,217,0.06);margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="width:28px;height:28px;border-radius:8px;background:rgba(69,159,217,0.15);display:flex;align-items:center;justify-content:center;">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#459fd9" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </div>
+            <span style="font-size:0.85rem;font-weight:700;color:#fff;">Member Login</span>
+          </div>
+          <p style="font-size:0.72rem;color:#6b7280;margin-bottom:12px;margin-left:36px;">Full access — logs, simulation, export.</p>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:0.7rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;">User ID</div>
+            <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(55,65,81,0.8);border-radius:8px;padding:9px 12px;font-size:0.82rem;color:#6b7280;">Enter your ID...</div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div style="font-size:0.7rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;">PIN (4–6 digits)</div>
+            <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(55,65,81,0.8);border-radius:8px;padding:9px 12px;font-size:0.82rem;color:#6b7280;">••••••</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#105ba4,#459fd9);border-radius:8px;padding:9px;text-align:center;font-size:0.85rem;font-weight:700;color:#fff;">Login</div>
+        </div>
+        <!-- Review access toggle -->
+        <div style="text-align:center;">
+          <div style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;border:1px solid rgba(16,185,129,0.3);">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#10b981" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span style="font-size:0.75rem;color:#10b981;font-weight:600;">Review Access</span>
+          </div>
+        </div>
+        <!-- Admin link hint -->
+        <div style="text-align:right;margin-top:8px;">
+          <span style="font-size:0.68rem;color:#4b5563;">Admin (bottom-right corner)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <table class="icon-table">
+    <thead>
+      <tr>
+        <th>Element</th>
+        <th>What It Does</th>
+        <th>Who Should Use It</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="icon-cell">
+            <div class="icon-box" style="background:rgba(69,159,217,0.12);">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#459fd9" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </div>
+            <div><strong>Member Login</strong><br><span class="text-muted text-sm">User ID + PIN</span></div>
+          </div>
+        </td>
+        <td>Full access to the app — edit logs, run simulations, save, export.</td>
+        <td>All team members (operators, approvers)</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="icon-cell">
+            <div class="icon-box" style="background:rgba(16,185,129,0.12);">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#10b981" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </div>
+            <div><strong>Review Access</strong><br><span class="text-muted text-sm">Project Code only</span></div>
+          </div>
+        </td>
+        <td>Read-only view of any project. No editing. Shows a green "VIEW ONLY" badge.</td>
+        <td>Clients, managers, external reviewers</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="icon-cell">
+            <div class="icon-box" style="background:rgba(243,145,36,0.12);">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <div><strong>Admin</strong><br><span class="text-muted text-sm">Bottom-right corner link</span></div>
+          </div>
+        </td>
+        <td>Opens the Admin Login modal for system administrators to manage users and project access.</td>
+        <td>Admin only — not visible as a card</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warn mt-4">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+    <div>The <strong>User ID</strong> and <strong>PIN</strong> are provided by your admin. If you don't have them, contact the person who set up the system.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div>
+      <h2>Admin Setup (First Launch)</h2>
+      <p>One-time setup before anyone else logs in</p>
+    </div>
+  </div>
+
+  <div class="callout callout-warn">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+    <div>This section applies only to the <strong>very first person</strong> to open the admin panel on a fresh installation. Skip to Section 4 if an admin already exists.</div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">How to Access the First-Time Setup</div>
+    <ol class="steps">
+      <li>
+        <strong>Click "Admin" — bottom-right corner of the Login screen</strong>
+        A small modal dialog opens. If no admin exists yet, it shows a yellow notice: <em>"No admin account found. Create your credentials now."</em>
+      </li>
+      <li>
+        <strong>Fill in your chosen username and password</strong>
+        The username can be anything (e.g. "admin" or your name). The password must be at least 1 character — choose something you can remember, as it cannot be recovered.
+      </li>
+      <li>
+        <strong>Click "Create Admin Account"</strong>
+        <div style="margin-top:6px;"><span class="btn-demo btn-orange">Create Admin Account</span></div>
+        A success message appears and the Admin Panel opens immediately.
+      </li>
+    </ol>
+  </div>
+
+  <div class="callout callout-info mt-4">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#459fd9" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <div>There is only <strong>one admin account</strong> per installation. The admin login is completely separate from regular user IDs — regular users never see or use an admin password.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div>
+      <h2>Admin Panel</h2>
+      <p>Managing users and project access control</p>
+    </div>
+  </div>
+
+  <!-- Admin panel mockup -->
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="mockup-dot" style="background:#ef4444"></div>
+      <div class="mockup-dot" style="background:#f59e0b"></div>
+      <div class="mockup-dot" style="background:#10b981"></div>
+      <div class="mockup-url">Admin Panel — MCS MiniSpector</div>
+    </div>
+    <div class="mockup-body" style="padding:0;">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#1f2937;border-bottom:2px solid #f39124;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span style="font-weight:700;color:#fff;">Admin Panel</span>
+        </div>
+        <div class="btn-demo btn-gray" style="font-size:0.75rem;gap:6px;">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Exit Admin
+        </div>
+      </div>
+      <!-- Body with sidebar -->
+      <div style="display:flex;min-height:160px;">
+        <div style="width:160px;padding:12px;border-right:1px solid #374151;background:#1f2937;flex-shrink:0;">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(243,145,36,0.1);border:1px solid rgba(243,145,36,0.3);margin-bottom:6px;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <span style="font-size:0.82rem;font-weight:600;color:#f39124;">Users</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;color:#9ca3af;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            <span style="font-size:0.82rem;font-weight:600;">Projects</span>
+          </div>
+        </div>
+        <div style="flex:1;padding:16px;font-size:0.8rem;color:#9ca3af;display:flex;align-items:center;justify-content:center;">
+          Tab content loads here (Users list or Project access)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <h3 style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:16px;">Tab 1 — Users</h3>
+
+  <table class="icon-table">
+    <thead><tr><th>Action</th><th>Button / Control</th><th>What Happens</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Add a user</strong></td>
+        <td><span class="btn-demo btn-orange" style="font-size:0.78rem;">Add User</span></td>
+        <td>Creates a new login account. Enter User ID (their login key) and Full Name, then click Add User.</td>
+      </tr>
+      <tr>
+        <td><strong>Delete a user</strong></td>
+        <td>
+          <div class="icon-box" style="background:rgba(239,68,68,0.12);display:inline-flex;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </div>
+          Trash icon
+        </td>
+        <td>Removes the user account. Does NOT remove them from existing projects automatically.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="divider">
+  <h3 style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:16px;">Tab 2 — Projects (Access Control)</h3>
+
+  <div class="callout callout-info">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#459fd9" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <div><strong>How access works:</strong> A project with <em>no members assigned</em> is open to all users. Once you assign at least one member, the project becomes restricted — only listed members can enter it by project code.</div>
+  </div>
+
+  <ol class="steps mt-4">
+    <li>
+      <strong>Enter the project code and click "Load Project"</strong>
+      Type a code like <code>PRJ-MCS-2026-A3F7</code> into the field and click Load Project. The current member list appears.
+    </li>
+    <li>
+      <strong>Add a member — pick user and role</strong>
+      Select a user from the dropdown of registered users, choose their role, then click Add Member.
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <span class="badge badge-gray">Viewer</span>
+        <span class="badge badge-blue">Operator</span>
+        <span class="badge badge-orange">Approver</span>
+      </div>
+    </li>
+    <li>
+      <strong>Change a member's role</strong>
+      Use the role dropdown next to their name in the list. Saves automatically.
+    </li>
+    <li>
+      <strong>Remove a member</strong>
+      Click <span class="badge badge-red">Remove</span> next to their row. They immediately lose access to the project.
+    </li>
+  </ol>
+
+  <div class="card mt-4">
+    <div class="card-title">Recommended Role Assignment for a Typical Project</div>
+    <table class="role-table" style="margin-top:8px;">
+      <thead><tr><th>Team Member</th><th>Suggested Role</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>ROV Supervisor</td><td><span class="badge badge-blue">Operator</span></td><td>Needs full access to all logs and checklists.</td></tr>
+        <tr><td>ROV Pilot(s)</td><td><span class="badge badge-blue">Operator</span></td><td>Enters dive logs and fault records.</td></tr>
+        <tr><td>Project Manager</td><td><span class="badge badge-orange">Approver</span></td><td>Signs off on simulation before deployment.</td></tr>
+        <tr><td>Office / Client</td><td><span class="badge badge-gray">Viewer</span></td><td>Monitor-only; cannot accidentally change anything.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <div>
+      <h2>Mode Select Screen</h2>
+      <p>What you see right after logging in</p>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(243,145,36,0.4);">
+      <div style="width:48px;height:48px;border-radius:12px;background:rgba(243,145,36,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      </div>
+      <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:6px;">New Project</div>
+      <p class="text-sm">Start a brand-new session. Only option shown is "Start with Simulation" (recommended) — this guides you through planning before going live.</p>
+    </div>
+    <div class="card" style="border-color:rgba(16,185,129,0.4);">
+      <div style="width:48px;height:48px;border-radius:12px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#10b981" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+      </div>
+      <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:6px;">Join / Continue</div>
+      <p class="text-sm">Enter a project code to join an existing session — from the cloud or a local saved copy. Access check applies if the project is restricted.</p>
+    </div>
+  </div>
+
+  <table class="icon-table mt-4">
+    <thead><tr><th>Button</th><th>Location</th><th>What It Does</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="btn-demo btn-orange">Start with Simulation <span style="font-size:0.7rem;opacity:0.7">Recommended</span></span></td>
+        <td>After clicking "New Project"</td>
+        <td>Opens Simulation mode — Step 1 (ROV & Scope selection).</td>
+      </tr>
+      <tr>
+        <td><span class="btn-demo btn-green">Join Project</span></td>
+        <td>After entering a project code</td>
+        <td>Searches cloud first, then local storage. Checks if your User ID is allowed in.</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--muted)">← Back</span></td>
+        <td>Below either sub-step</td>
+        <td>Returns to the two main cards.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warn mt-4">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+    <div>If you see <strong>"You do not have access to this project. Contact your admin."</strong> — your User ID is not on the project member list. Ask the admin to add you in the Projects tab.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <div>
+      <h2>App Header Buttons</h2>
+      <p>The toolbar at the top of the dashboard — every icon explained</p>
+    </div>
+  </div>
+
+  <!-- Header mockup -->
+  <div style="background:#1f2937;border:1px solid #374151;border-radius:14px;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:4px;height:20px;border-radius:2px;background:linear-gradient(180deg,#f39124,#fbbf24);"></div>
+      <span style="font-size:0.85rem;font-weight:700;color:#fff;">Project Details</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <!-- Autosave indicator -->
+      <div style="display:flex;align-items:center;gap:5px;background:#374151;border-radius:7px;padding:5px 10px;font-size:0.72rem;color:#9ca3af;border:1px solid #4b5563;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity="0.25"/><path d="M4 12a8 8 0 018-8v8z" fill="currentColor" opacity="0.75"/></svg>
+        Auto-saved
+      </div>
+      <!-- Sync status -->
+      <div style="display:flex;align-items:center;gap:5px;background:#1e293b;border-radius:7px;padding:5px 10px;font-size:0.72rem;color:#9ca3af;border:1px solid #374151;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#10b981;"></div>
+        Synced
+      </div>
+      <!-- Charts button -->
+      <div style="width:32px;height:32px;border-radius:8px;background:#111827;border:1px solid #374151;display:flex;align-items:center;justify-content:center;">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      </div>
+      <!-- Sync button -->
+      <div style="display:flex;align-items:center;gap:5px;background:#111827;border-radius:8px;padding:6px 12px;font-size:0.75rem;color:#9ca3af;border:1px solid #4b5563;">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+        Sync
+      </div>
+      <div style="width:1px;height:20px;background:#374151;"></div>
+      <!-- File IO group -->
+      <div style="display:flex;align-items:center;gap:2px;background:#111827;border-radius:8px;border:1px solid #374151;padding:2px;">
+        <div style="width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        </div>
+        <div style="width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+        </div>
+        <div style="width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+      </div>
+      <!-- Support -->
+      <div style="width:36px;height:34px;border-radius:8px;background:#374151;border:1px solid #4b5563;display:flex;align-items:center;justify-content:center;">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <table class="icon-table">
+    <thead><tr><th width="180">Button / Indicator</th><th>Icon</th><th>What It Does</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Auto-saved</strong> indicator</td>
+        <td>
+          <div class="icon-box" style="background:#374151;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9ca3af" stroke-width="4" opacity="0.25"/><path d="M4 12a8 8 0 018-8v8z" fill="#9ca3af" opacity="0.75"/></svg>
+          </div>
+        </td>
+        <td>Spinning icon + "Auto-saved" text. Appears briefly every 3 minutes when the app saves a local draft. No action needed — this is automatic.</td>
+      </tr>
+      <tr>
+        <td><strong>Saved!</strong> indicator</td>
+        <td>
+          <div class="icon-box" style="background:rgba(16,185,129,0.15);">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#10b981" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+        </td>
+        <td>Green checkmark that briefly flashes after a successful manual save. Confirms your data is stored.</td>
+      </tr>
+      <tr>
+        <td><strong>Sync Status</strong></td>
+        <td>
+          <div style="display:flex;gap:4px;">
+            <div class="icon-box" style="background:rgba(16,185,129,0.1);">
+              <div style="width:8px;height:8px;border-radius:50%;background:#10b981;"></div>
+            </div>
+            <div class="icon-box" style="background:rgba(239,68,68,0.1);">
+              <div style="width:8px;height:8px;border-radius:50%;background:#ef4444;"></div>
+            </div>
+          </div>
+        </td>
+        <td>Colored dot + label. <span class="badge badge-green">Synced</span> = cloud up to date. <span class="badge badge-red">Offline</span> = no internet, changes queued locally.</td>
+      </tr>
+      <tr>
+        <td><strong>Infographics</strong></td>
+        <td>
+          <div class="icon-box" style="background:#1f2937;border:1px solid #374151;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+        </td>
+        <td>Bar chart icon. Jumps directly to the Infographics & Analysis dashboard — KPI cards, dive utilization chart, live status.</td>
+      </tr>
+      <tr>
+        <td><strong>Sync to Cloud</strong></td>
+        <td>
+          <div class="icon-box" style="background:#1f2937;border:1px solid #374151;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          </div>
+        </td>
+        <td>Upload-arrow cloud icon with "Sync" label. Manually pushes all current data to Supabase cloud. Use after important changes. Spins while uploading.</td>
+      </tr>
+      <tr>
+        <td><strong>Upload JSON</strong></td>
+        <td>
+          <div class="icon-box" style="background:#1f2937;border:1px solid #374151;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </div>
+        </td>
+        <td>Upload arrow icon. Opens a file picker to load a previously saved <code>.json</code> backup file into the current session.</td>
+      </tr>
+      <tr>
+        <td><strong>Save JSON</strong></td>
+        <td>
+          <div class="icon-box" style="background:#1f2937;border:1px solid #374151;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          </div>
+        </td>
+        <td>Floppy-disk / download icon. Saves the full session as a <code>.json</code> file to your computer — useful as an offline backup.</td>
+      </tr>
+      <tr>
+        <td><strong>Export Report</strong></td>
+        <td>
+          <div class="icon-box" style="background:#1f2937;border:1px solid #374151;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+        </td>
+        <td>Document icon. Exports the full operational report as a Word document (.docx). Downloads immediately.</td>
+      </tr>
+      <tr>
+        <td><strong>Technical Support</strong></td>
+        <td>
+          <div class="icon-box" style="background:#374151;border:1px solid #4b5563;">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          </div>
+        </td>
+        <td>Headset / support icon. Opens contact/support dialog for technical assistance.</td>
+      </tr>
+      <tr>
+        <td><strong>VIEW ONLY badge</strong></td>
+        <td>
+          <div class="badge badge-green">
+            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            VIEW ONLY
+          </div>
+        </td>
+        <td>Shown in Reviewer mode. Click the <strong>✕</strong> inside the badge to exit viewer mode and return to the login screen.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <div>
+      <h2>Sidebar Navigation</h2>
+      <p>Every tab in Operation mode and Simulation mode</p>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <!-- Operation sidebar -->
+    <div>
+      <div class="card-title mb-4">
+        <span class="badge badge-blue">Operation Mode</span> Sidebar
+      </div>
+      <div class="nav-demo">
+        <div class="nav-demo-item active">
+          <div class="nav-demo-icon" style="background:rgba(243,145,36,0.25);color:#f39124;">
+            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          Project Details
+        </div>
+        <div class="nav-demo-item">
+          <div class="nav-demo-icon">👥</div>Crew &amp; Shifts
+        </div>
+        <div class="nav-demo-item" style="border-left-color:rgba(243,145,36,0.5);background:rgba(243,145,36,0.06);color:#f39124;">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="2" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zm-9-4h2a2 2 0 012 2v2H7V5a2 2 0 012-2z"/></svg>
+          Packing List &amp; Equipment
+        </div>
+        <div class="nav-section-label">Mobilization</div>
+        <div class="nav-demo-item">
+          <div class="nav-demo-icon"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>
+          Mobilization <span style="font-size:0.65rem;padding:2px 6px;border-radius:999px;background:#374151;color:#6b7280;margin-left:auto;">0/73</span>
+        </div>
+        <div class="nav-section-label">Setup</div>
+        <div class="nav-demo-item">
+          <div class="nav-demo-icon"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>
+          Start-Up <span style="font-size:0.65rem;padding:2px 6px;border-radius:999px;background:#374151;color:#6b7280;margin-left:auto;">0/57</span>
+        </div>
+        <div class="nav-section-label">Operations</div>
+        <div class="nav-demo-item">
+          <div class="nav-demo-icon"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>
+          Pre-Op Checklist
+        </div>
+        <div class="nav-demo-item"><div class="nav-demo-icon">⏱</div>Standby Time Log</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon">🤿</div>Dive Log</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon">🔧</div>Maintenance Log</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon">⚡</div>Technical / Faults</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon">🦺</div>HSE Report</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>Post-Op Checklist</div>
+        <div class="nav-section-label">Close-Out</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon">🚀</div>LARS Status</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>Shutdown</div>
+        <div class="nav-section-label">Demobilization</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>Demobilization</div>
+        <div class="nav-section-label">Analysis</div>
+        <div class="nav-demo-item"><div class="nav-demo-icon">📊</div>Infographics</div>
+      </div>
+    </div>
+
+    <!-- Simulation sidebar -->
+    <div>
+      <div class="card-title mb-4">
+        <span class="badge badge-orange">Simulation Mode</span> Sidebar
+      </div>
+      <div class="nav-demo">
+        <div class="nav-section-label" style="color:var(--orange)">Simulation</div>
+        <div class="nav-demo-item active">
+          Mission Info
+        </div>
+        <div class="nav-demo-item">
+          History
+        </div>
+        <div class="nav-demo-item" style="justify-content:space-between;">
+          <span>Approvals</span>
+          <span style="font-size:0.65rem;padding:2px 6px;border-radius:999px;background:#f59e0b;color:#111;font-weight:700;">3</span>
+        </div>
+      </div>
+
+      <div class="card mt-4" style="border-color:rgba(243,145,36,0.3);">
+        <div class="card-title text-orange">Approvals tab</div>
+        <p class="text-sm">Only visible to users with the <span class="badge badge-orange">Approver</span> role. Shows all submitted simulations waiting for review. Hidden for Operators and Viewers.</p>
+      </div>
+
+      <div class="card mt-3" style="border-color:rgba(243,145,36,0.3);">
+        <div class="card-title">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zm-9-4h2a2 2 0 012 2v2H7V5a2 2 0 012-2z"/></svg>
+          Packing List &amp; Equipment
+        </div>
+        <p class="text-sm">Appears in Operation mode only after "Push to Operation" has been done. Highlighted in orange as it carries data from the simulation.</p>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-title">Checklist badges</div>
+        <p class="text-sm">Each checklist sidebar item shows a <code>X/Y</code> counter (e.g. <code>0/73</code>). This tracks how many items are completed out of the total. The number updates live as you tick items.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">08</div>
+    <div>
+      <h2>Simulation Flow</h2>
+      <p>Step-by-step: from ROV selection to saving</p>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="flow-node highlight">Step 1<br><small>ROV & Scope</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">Step 2<br><small>Mission Planning</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">Save</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">Submit for Approval</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="card">
+    <div class="card-title">Step 1 — ROV &amp; Scope Selection</div>
+    <ol class="steps">
+      <li><strong>Select Operation Scope</strong> — Choose the job type from the dropdown.</li>
+      <li><strong>Select ROV Units</strong> — Tick which ROV numbers are deployed and mark each as Main or Standby.</li>
+      <li>
+        <strong>Click "Continue to Mission Planning"</strong>
+        <div style="margin-top:6px;"><span class="btn-demo btn-orange">Continue to Mission Planning →</span></div>
+      </li>
+    </ol>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">Step 2 — Mission Planning Tabs</div>
+    <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid #374151;border-radius:8px;overflow:hidden;">
+      <div style="flex:1;padding:8px 16px;background:rgba(243,145,36,0.1);border-right:1px solid #374151;text-align:center;font-size:0.82rem;font-weight:700;color:#f39124;">Sensors &amp; Equipment</div>
+      <div style="flex:1;padding:8px 16px;text-align:center;font-size:0.82rem;font-weight:600;color:#9ca3af;">Topology</div>
+    </div>
+    <div class="card-grid">
+      <div>
+        <strong style="display:block;margin-bottom:8px;">Sensors &amp; Equipment tab</strong>
+        <ul style="list-style:disc;padding-left:18px;font-size:0.85rem;color:var(--muted);">
+          <li>Add sensors (name, model, quantity)</li>
+          <li>Mark each as Calibrated ✓ / Tested ✓</li>
+          <li>Add equipment and consumables</li>
+          <li>Note known issues</li>
+        </ul>
+      </div>
+      <div>
+        <strong style="display:block;margin-bottom:8px;">Topology tab</strong>
+        <ul style="list-style:disc;padding-left:18px;font-size:0.85rem;color:var(--muted);">
+          <li>Upload system diagram image</li>
+          <li>Add machines with IP addresses &amp; software</li>
+          <li>Fill System IPs table</li>
+          <li>Hardware &amp; consumables</li>
+          <li>Simulation test results</li>
+          <li>Deliverable details</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="card-title">Topology Toolbar Buttons</div>
+    <table class="icon-table" style="margin-top:8px;">
+      <thead><tr><th>Button</th><th>Icon</th><th>What It Does</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Collapse / Expand All</strong></td>
+          <td>
+            <div class="icon-box" style="background:#374151;border:1px solid #4b5563;">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#d1d5db" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+            </div>
+          </td>
+          <td>Chevron icon. Collapses all topology sections at once. When all are collapsed, the icon flips (↓) and the tooltip changes to "Expand All". Hover to see the tooltip label.</td>
+        </tr>
+        <tr>
+          <td><strong>Export Excel</strong></td>
+          <td>
+            <div class="icon-box" style="background:#f39124;">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+          </td>
+          <td>Orange spreadsheet icon. Exports the full topology data as an <code>.xlsx</code> Excel file. Hover shows tooltip "Export Excel (.xlsx)".</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">Saving the Simulation</div>
+    <ol class="steps">
+      <li>
+        <strong>Click the Save icon</strong> in the simulation toolbar (floppy disk / save button).
+        The simulation is stored locally and pushed to the cloud if online. A project code is auto-generated.
+      </li>
+      <li>
+        <strong>Note the project code</strong> — it looks like <code>PRJ-MCS-2026-A3F7</code>.
+        It appears in the top banner. Share this with team members who need to join.
+      </li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 9 -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">09</div>
+    <div>
+      <h2>Simulation Approval Flow</h2>
+      <p>Submit → Review → Approve or Reject</p>
+    </div>
+  </div>
+
+  <div class="flow" style="flex-wrap:wrap;gap:6px;">
+    <div class="flow-node">Draft</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:#f59e0b;background:rgba(245,158,11,0.1);color:#f59e0b;">Submitted</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node blue" style="border-color:#10b981;background:rgba(16,185,129,0.1);color:#10b981;">Approved</div>
+    <div class="flow-arrow" style="color:#6b7280;">or</div>
+    <div class="flow-node" style="border-color:#ef4444;background:rgba(239,68,68,0.1);color:#ef4444;">Rejected</div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">Step 1 — Operator Submits</div>
+    <p class="text-sm">In the simulation dashboard header, find the approval status widget. When the simulation is ready:</p>
+    <ol class="steps mt-4">
+      <li>
+        <strong>Click "Submit for Approval"</strong>
+        <div style="margin-top:6px;"><span class="btn-demo btn-blue">Submit for Approval</span></div>
+      </li>
+      <li>
+        <strong>Status badge changes to "Submitted"</strong>
+        <span class="badge badge-yellow">SUBMITTED</span> — the approver sees this on their next sync.
+      </li>
+    </ol>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">Step 2 — Approver Reviews</div>
+    <ol class="steps">
+      <li><strong>Log in with Approver User ID and join the project</strong></li>
+      <li>
+        <strong>Click "Approvals" in the sidebar</strong> — this tab is only visible to approvers.
+        <div class="nav-demo" style="margin-top:8px;max-width:200px;">
+          <div class="nav-demo-item active" style="justify-content:space-between;">
+            <span>Approvals</span>
+            <span style="font-size:0.65rem;padding:2px 6px;border-radius:999px;background:#f59e0b;color:#111;font-weight:700;">1</span>
+          </div>
+        </div>
+      </li>
+      <li>
+        <strong>Review the simulation, then click Approve or Reject</strong>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <span class="btn-demo btn-green">✓ Approve</span>
+          <span class="btn-demo btn-red">✕ Reject</span>
+        </div>
+        If rejecting, enter a reason — the operator sees this message on their next sync.
+      </li>
+    </ol>
+  </div>
+
+  <div class="card mt-4" style="border-color:rgba(16,185,129,0.3);">
+    <div class="card-title text-green">Step 3 — Approved State</div>
+    <p class="text-sm">Once approved:</p>
+    <ul style="margin-top:8px;list-style:disc;padding-left:18px;font-size:0.85rem;color:var(--muted);">
+      <li>Header shows a green <span class="badge badge-green">APPROVED</span> badge</li>
+      <li>The "Push to Operation" button becomes active</li>
+      <li>All connected devices see the approval in real time (no page reload needed)</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-info mt-4">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#459fd9" stroke-width="2" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <div>Approval status changes are applied <strong>silently</strong> — operators already inside the project see a toast notification ("Simulation approved ✓") without any disruptive dialog.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 10 -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div>
+      <h2>Operation Flow</h2>
+      <p>Live mission logging at sea — all log sections explained</p>
+    </div>
+  </div>
+
+  <table class="icon-table">
+    <thead><tr><th>Sidebar Tab</th><th>What You Log Here</th><th>How to Add an Entry</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Project Details</strong></td>
+        <td>Project name, code, vessel, location, scope</td>
+        <td>Fill in form fields directly — no modal needed</td>
+      </tr>
+      <tr>
+        <td><strong>Crew &amp; Shifts</strong></td>
+        <td>Crew roster + daily shift records (weather, dates, notes)</td>
+        <td>Click "+ Add Crew Row" or "+ Add Shift"</td>
+      </tr>
+      <tr>
+        <td><strong>Packing List &amp; Equipment</strong></td>
+        <td>Pre-loaded from simulation push — sensors, machines, equipment</td>
+        <td>Populated automatically; edit inline</td>
+      </tr>
+      <tr>
+        <td><strong>Mobilization checklist</strong></td>
+        <td>73-item pre-departure checklist</td>
+        <td>Tick each checkbox; counter updates automatically</td>
+      </tr>
+      <tr>
+        <td><strong>Start-Up checklist</strong></td>
+        <td>57-item system startup checklist</td>
+        <td>Tick each checkbox</td>
+      </tr>
+      <tr>
+        <td><strong>Pre-Op Checklist</strong></td>
+        <td>74-item pre-dive safety checklist (per dive)</td>
+        <td>Tick each checkbox</td>
+      </tr>
+      <tr>
+        <td><strong>Standby Time Log</strong></td>
+        <td>Standby events — reason, duration, responsible party</td>
+        <td>Click <span class="btn-demo btn-gray" style="font-size:0.72rem;">+ Add Standby</span> → fill modal → Save</td>
+      </tr>
+      <tr>
+        <td><strong>Dive Log</strong></td>
+        <td>Each ROV dive — depth, start/end time, ROV used, objective</td>
+        <td>Click <span class="btn-demo btn-gray" style="font-size:0.72rem;">+ Add Dive</span> → fill modal → Save</td>
+      </tr>
+      <tr>
+        <td><strong>Maintenance Log</strong></td>
+        <td>Maintenance events — equipment, action taken, duration</td>
+        <td>Click <span class="btn-demo btn-gray" style="font-size:0.72rem;">+ Add Maintenance</span> → modal</td>
+      </tr>
+      <tr>
+        <td><strong>Technical / Faults</strong></td>
+        <td>Equipment faults — system, fault description, resolution</td>
+        <td>Click <span class="btn-demo btn-gray" style="font-size:0.72rem;">+ Add Fault</span> → modal</td>
+      </tr>
+      <tr>
+        <td><strong>HSE Report</strong></td>
+        <td>Safety incidents — type, description, actions taken</td>
+        <td>Click <span class="btn-demo btn-gray" style="font-size:0.72rem;">+ Add HSE</span> → modal</td>
+      </tr>
+      <tr>
+        <td><strong>Post-Op Checklist</strong></td>
+        <td>19-item post-dive inspection checklist</td>
+        <td>Tick each checkbox</td>
+      </tr>
+      <tr>
+        <td><strong>LARS Status</strong></td>
+        <td>Launch &amp; Recovery System inspection fields</td>
+        <td>Fill in form fields directly</td>
+      </tr>
+      <tr>
+        <td><strong>Shutdown checklist</strong></td>
+        <td>8-item system shutdown checklist</td>
+        <td>Tick each checkbox</td>
+      </tr>
+      <tr>
+        <td><strong>Demobilization checklist</strong></td>
+        <td>27-item post-mission packing checklist</td>
+        <td>Tick each checkbox</td>
+      </tr>
+      <tr>
+        <td><strong>Infographics</strong></td>
+        <td>Auto-generated KPI cards and charts from logged data</td>
+        <td>Read-only view — updates as you add logs</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card mt-4">
+    <div class="card-title">Modal Log Entry Pattern</div>
+    <p class="text-sm">Every log section (Dive, Fault, HSE, etc.) uses the same pattern:</p>
+    <ol class="steps mt-4">
+      <li><strong>Click the "+ Add" button</strong> for that section. A dialog opens.</li>
+      <li><strong>Fill in the fields</strong> in the modal form.</li>
+      <li><strong>Click Save</strong> — the entry appears as a card in the list.</li>
+      <li><strong>To edit</strong> — click any existing card to reopen the modal with its data pre-filled.</li>
+      <li><strong>To delete</strong> — look for a trash icon inside the card or modal.</li>
+    </ol>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">Draft Recovery Banner</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(180,83,9,0.2);border:1px solid rgba(217,119,6,0.4);border-radius:10px;margin-top:8px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fbbf24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        <div>
+          <div style="font-size:0.82rem;font-weight:700;color:#fde68a;">Unsaved Session Detected</div>
+          <div style="font-size:0.72rem;color:rgba(253,230,138,0.7);">Auto-saved 3 minutes ago</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <span class="btn-demo btn-orange" style="font-size:0.72rem;">↺ Restore Session</span>
+        <span class="btn-demo btn-gray" style="font-size:0.72rem;">Discard</span>
+      </div>
+    </div>
+    <p class="text-sm mt-4">This amber banner appears at the top of the dashboard when the app detects an unsaved auto-draft from a previous session. Click <strong>Restore Session</strong> to recover all data, or <strong>Discard</strong> to start fresh.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 11 -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div>
+      <h2>Push to Operation</h2>
+      <p>Transferring all simulation data into the live operation session</p>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="flow-node highlight">Approved Simulation</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node blue">Push to Operation</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border-color:#10b981;color:#10b981;background:rgba(16,185,129,0.1);">Operation Mode<br><small>pre-filled</small></div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">What Gets Transferred Automatically</div>
+    <div class="card-grid" style="margin-top:8px;">
+      <ul style="list-style:disc;padding-left:18px;font-size:0.85rem;color:var(--muted);">
+        <li>Project name, code, and scope</li>
+        <li>All mission sensors + calibration/test status</li>
+        <li>Machine/computer list with IP addresses</li>
+      </ul>
+      <ul style="list-style:disc;padding-left:18px;font-size:0.85rem;color:var(--muted);">
+        <li>Equipment and hardware list</li>
+        <li>ROV unit roster (main/standby roles)</li>
+        <li>Thruster configuration &amp; system IPs</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">How to Push</div>
+    <ol class="steps">
+      <li><strong>Open the approved simulation</strong> — green "Approved" badge must be visible.</li>
+      <li>
+        <strong>Click "Push to Operation" in the simulation toolbar</strong>
+        <div style="margin-top:6px;"><span class="btn-demo btn-orange">→ Push to Operation</span></div>
+      </li>
+      <li><strong>A confirmation dialog appears</strong> — review what will be transferred and click "Proceed".</li>
+      <li><strong>The app switches to Operation mode</strong> — all data is pre-filled. A "Packing List &amp; Equipment" tab appears in the sidebar.</li>
+    </ol>
+  </div>
+
+  <div class="callout callout-info mt-4">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#459fd9" stroke-width="2" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <div>After push, the simulation is <strong>locked</strong> — an orange "SIMULATION LOCKED" banner appears. Use "Unlock &amp; Re-edit" only if changes are needed before a re-push. The operation data syncs to the cloud immediately so other team members joining by project code get the pre-filled operation.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 12 -->
+<div class="section" id="s12">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div>
+      <h2>Cloud Sync &amp; Auto-Save</h2>
+      <p>How your data is protected and shared</p>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#10b981" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+        Auto-Save (every 3 min)
+      </div>
+      <p class="text-sm">Runs silently in the background. Stores a local draft. The "Auto-saved" spinning indicator appears briefly. Protects against crashes and power loss.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#459fd9" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+        Cloud Sync (manual)
+      </div>
+      <p class="text-sm">Triggered by clicking the "Sync" button in the header, or automatically after every manual Save. Pushes data to the cloud so other devices see it.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#f59e0b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        Offline Queue
+      </div>
+      <p class="text-sm">No internet? Saves go into a local queue. When the connection returns, all queued changes are flushed to the cloud automatically.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#a78bfa" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Cloud Polling (every 30s)
+      </div>
+      <p class="text-sm">While a project is open, the app checks for cloud updates every 30 seconds. Approval status updates silently with a toast. Other data changes show a confirm dialog.</p>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-title">Sync Status Indicator</div>
+    <table class="icon-table" style="margin-top:8px;">
+      <thead><tr><th>Icon / Dot Color</th><th>Label</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#10b981;"></div></div></td>
+          <td><span class="badge badge-green">Synced</span></td>
+          <td>Cloud is up to date with local data.</td>
+        </tr>
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#ef4444;"></div></div></td>
+          <td><span class="badge badge-red">Offline</span></td>
+          <td>No internet connection. Saves queued locally.</td>
+        </tr>
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#f59e0b;animation:pulse 1.5s infinite;"></div></div></td>
+          <td><span class="badge badge-yellow">Syncing…</span></td>
+          <td>Upload in progress.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 13 -->
+<div class="section" id="s13">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <div>
+      <h2>User Roles Reference</h2>
+      <p>Who can do what</p>
+    </div>
+  </div>
+
+  <table class="role-table">
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>How to Get It</th>
+        <th>What They Can Do</th>
+        <th>Cannot Do</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-orange">Admin</span></td>
+        <td>First-time setup (one per install)</td>
+        <td>Manage all users and project access. Not project-specific.</td>
+        <td>Cannot log in as a regular user simultaneously</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">Operator</span></td>
+        <td>Assigned by admin in Projects tab</td>
+        <td>Full edit: all logs, checklists, save, sync, export. Submit simulation for approval.</td>
+        <td>Cannot approve/reject simulations</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);">Approver</span></td>
+        <td>Assigned by admin in Projects tab</td>
+        <td>Everything an Operator can do, <em>plus</em>: sees the Approvals sidebar tab and can approve or reject submitted simulations.</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-gray">Viewer</span></td>
+        <td>Assigned by admin in Projects tab</td>
+        <td>Browse all tabs and read all data. Sees the same view as the team.</td>
+        <td>Cannot edit, save, submit, export, or sync.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">Reviewer</span></td>
+        <td>Enters via Review Access on login screen — no User ID needed</td>
+        <td>Same read-only browsing as Viewer. Enters with just a project code.</td>
+        <td>Cannot access Admin Panel, Approvals, or any write operation.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 14 -->
+<div class="section" id="s14">
+  <div class="section-header">
+    <div class="section-num">14</div>
+    <div>
+      <h2>Quick Start Checklist</h2>
+      <p>Ordered task list for each role on a new deployment</p>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(243,145,36,0.3);">
+      <div class="card-title text-orange">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        Admin — Do This First
+      </div>
+      <ul class="checklist mt-4">
+        <li><div class="check-box"></div>Open app → click "Admin" (bottom-right corner)</li>
+        <li><div class="check-box"></div>Complete first-time admin account setup</li>
+        <li><div class="check-box"></div>Go to Users tab → add all team members (User ID + Name)</li>
+        <li><div class="check-box"></div>Share each person's User ID with them</li>
+        <li><div class="check-box"></div>After a project is created — go to Projects tab, enter code, and assign member roles</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-color:rgba(243,145,36,0.3);">
+      <div class="card-title text-orange">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#f39124" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Simulation Lead
+      </div>
+      <ul class="checklist mt-4">
+        <li><div class="check-box"></div>Log in with your User ID and PIN</li>
+        <li><div class="check-box"></div>Select "New Project" → "Start with Simulation"</li>
+        <li><div class="check-box"></div>Step 1: Fill ROV configuration and scope</li>
+        <li><div class="check-box"></div>Step 2: Complete Sensors &amp; Equipment tab</li>
+        <li><div class="check-box"></div>Step 2: Complete Topology tab</li>
+        <li><div class="check-box"></div>Save — note the auto-generated project code</li>
+        <li><div class="check-box"></div>Tell admin to add team members to the project</li>
+        <li><div class="check-box"></div>Click "Submit for Approval" when ready</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-color:rgba(167,139,250,0.3);">
+      <div class="card-title" style="color:#a78bfa;">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#a78bfa" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Approver
+      </div>
+      <ul class="checklist mt-4">
+        <li><div class="check-box"></div>Log in with your User ID and PIN</li>
+        <li><div class="check-box"></div>Join the project by entering its code</li>
+        <li><div class="check-box"></div>Click "Approvals" in the sidebar (visible only to approvers)</li>
+        <li><div class="check-box"></div>Review the simulation data</li>
+        <li><div class="check-box"></div>Click Approve ✓ or Reject (with reason)</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-color:rgba(16,185,129,0.3);">
+      <div class="card-title text-green">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Vessel Crew (after push)
+      </div>
+      <ul class="checklist mt-4">
+        <li><div class="check-box"></div>Log in with your User ID and PIN</li>
+        <li><div class="check-box"></div>Select "Join / Continue"</li>
+        <li><div class="check-box"></div>Enter the project code from the lead</li>
+        <li><div class="check-box"></div>Operation mode opens with all data pre-filled</li>
+        <li><div class="check-box"></div>Begin Mobilization checklist</li>
+        <li><div class="check-box"></div>Log shifts: Crew &amp; Shifts → Add Shift</li>
+        <li><div class="check-box"></div>Log dives: Dive Log → + Add Dive</li>
+        <li><div class="check-box"></div>Report faults: Technical / Faults → + Add Fault</li>
+        <li><div class="check-box"></div>Manual sync after each major update</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- end page -->
+
+<div class="footer">
+  <div style="margin-bottom:8px;">
+    <span class="badge badge-orange">MiniSpector® Log</span>
+    &nbsp;
+    <span class="badge badge-gray">Version 1.0.0</span>
+    &nbsp;
+    <span class="badge badge-gray">MCS GROUP</span>
+  </div>
+  This user manual was generated for first-time users. For technical issues, use the Support button in the app header.
+</div>
+
+</body>
+</html>

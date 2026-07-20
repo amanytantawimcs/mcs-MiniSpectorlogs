@@ -1,0 +1,78 @@
+{
+  "name": "minispector-log",
+  "version": "1.0.0",
+  "description": "ROV Inspection Reporting & Simulation System",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "rebuild": "electron-rebuild",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.mcs.minispector-log",
+    "productName": "MiniSpector Log",
+    "copyright": "MCS",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "index.html",
+      "js/**",
+      "assets/**",
+      "sw.js",
+      "manifest.json",
+      "Job Simulation.xlsx",
+      "electron/**",
+      "node_modules/**",
+      "!node_modules/.cache",
+      "!**/*.md",
+      "!CLAUDE.md",
+      "!PRE_PUBLISH_PLAN.md",
+      "!ARCHITECTURE.md",
+      "!app-flow.md"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/logo.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "MiniSpector Log"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/logo.png",
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/logo.png",
+      "category": "Utility"
+    }
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "better-sqlite3": "^9.4.3",
+    "docx": "^7.8.2",
+    "ws": "^8.20.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1",
+    "electron-rebuild": "^3.2.9"
+  }
+}
