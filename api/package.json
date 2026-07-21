@@ -1,0 +1,16 @@
+{
+  "name": "minispector-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "REST API in front of Railway Postgres for MiniSpector Log — replaces direct-from-browser Supabase calls",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "migrate": "node migrate.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
+  }
+}
